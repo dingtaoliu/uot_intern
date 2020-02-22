@@ -1,0 +1,16 @@
+	mnist/.DS_Store
+	mnist/Datasets/
+	mnist/part1/
+	mnist/part2-mnist/
+	mnist/part2-nn/
+	mnist/part2-twodigit/.DS_Store
+	mnist/part2-twodigit/SCNN2_output.txt
+	mnist/part2-twodigit/__pycache__/
+	mnist/part2-twodigit/mnist_model_fully_connected.pt
+	mnist/part2-twodigit/sample_images/
+	mnist/part2-twodigit/training_accuracy.png
+	mnist/part2-twodigit/training_loss.png
+	mnist/part2-twodigit/validation_accuracy.png
+	mnist/part2-twodigit/validation_loss.png
+	mnist/utils.py
+	mnist/utils.py.bak
