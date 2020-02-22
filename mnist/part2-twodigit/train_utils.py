@@ -36,10 +36,13 @@ def compute_accuracy(predictions, y):
     return np.mean(np.equal(predictions.numpy(), y.numpy()))
 
 
-def train_model(train_data, dev_data, model, lr=0.01, momentum=0.9, nesterov=False, n_epochs=30):
+def train_model(train_data, dev_data, model, lr=0.01, momentum=0.9, nesterov=False, n_epochs=30, opt=None):
     """Train a model for N epochs given data and hyper-params."""
-    # We optimize with SGD
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum, nesterov=nesterov)
+    # We optimize with SGD or a custom optimizer
+    if opt:
+        optimizer = opt(model.parameters(), lr=lr)
+    else:
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum, nesterov=nesterov)
 
     train_losses, val_losses, train_accs, val_accs = [], [], [], []
     for epoch in range(1, n_epochs + 1):
@@ -62,21 +65,7 @@ def train_model(train_data, dev_data, model, lr=0.01, momentum=0.9, nesterov=Fal
         # Save model
         torch.save(model, 'mnist_model_fully_connected.pt')
     
-    plt.plot(train_accs)
-    plt.savefig("training_accuracy.png")
-    plt.show() 
-
-    plt.plot(val_accs)
-    plt.savefig("validation_accuracy.png")
-    plt.show() 
-
-    plt.plot(train_losses)
-    plt.savefig("training_loss.png")
-    plt.show() 
-
-    plt.plot(val_losses)
-    plt.savefig("validation_loss.png")
-    plt.show() 
+    draw_plots(train_losses, val_losses, train_accs, val_accs)
 
 
 def run_epoch(data, model, optimizer):
@@ -121,3 +110,20 @@ def run_epoch(data, model, optimizer):
     avg_loss = np.mean(losses_first_label), np.mean(losses_second_label)
     avg_accuracy = np.mean(batch_accuracies_first), np.mean(batch_accuracies_second)
     return avg_loss, avg_accuracy
+
+def draw_plots(train_losses, val_losses, train_accs, val_accs):
+    plt.plot(train_accs)
+    plt.savefig("training_accuracy.png")
+    plt.clf()
+
+    plt.plot(val_accs)
+    plt.savefig("validation_accuracy.png")
+    plt.clf()
+
+    plt.plot(train_losses)
+    plt.savefig("training_loss.png")
+    plt.clf() 
+
+    plt.plot(val_losses)
+    plt.savefig("validation_loss.png")
+    plt.clf()

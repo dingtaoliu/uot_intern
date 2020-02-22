@@ -83,10 +83,10 @@ def main():
 
     # Load model
     input_dimension = img_rows * img_cols
-    model = SCNN2(input_dimension) # TODO add proper layers to CNN class above
+    model = SCNN3(input_dimension) # TODO add proper layers to CNN class above
 
     # Train
-    train_model(train_batches, dev_batches, model, n_epochs=20)
+    train_model(train_batches, dev_batches, model, n_epochs=10, opt=torch.optim.Adam, lr=0.001)
 
     ## Evaluate the model on test data
     loss, acc = run_epoch(test_batches, model.eval(), None)

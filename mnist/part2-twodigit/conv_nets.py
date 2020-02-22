@@ -70,8 +70,8 @@ class SCNN2(nn.Module):
 
         self.flatten = Flatten()
 
-        self.linear1 = nn.Linear(14 * 14 * 64, 128)
-        self.linear2 = nn.Linear(128, num_classes)
+        self.linear1 = nn.Linear(14 * 14 * 64, num_classes)
+        #self.linear2 = nn.Linear(128, num_classes)
 
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print("Model contains {} trainable parameters".format(num_params))
@@ -98,11 +98,11 @@ class SCNN2(nn.Module):
         h1 = self.flatten(h1)
         h2 = self.flatten(h2)
 
-        h1 = torch.sigmoid(self.linear1(h1))
-        h2 = torch.sigmoid(self.linear1(h2))
+        # h1 = torch.sigmoid(self.linear1(h1))
+        # h2 = torch.sigmoid(self.linear1(h2))
 
-        logits1 = self.linear2(h1)
-        logits2 = self.linear2(h2)
+        logits1 = self.linear1(h1)
+        logits2 = self.linear1(h2)
 
         out_first_digit = F.softmax(logits1, dim=1)
         out_second_digit = F.softmax(logits2, dim=1)
@@ -119,8 +119,10 @@ class SCNN3(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 3, stride=1, padding=1)
 
         # depthwise separable layer 2
-        self.depthwise1 = nn.Conv2d(32, 32, 3, padding=1, groups=32)
-        self.pointwise1 = nn.Conv2d(32, 64, 1)
+        self.depthwise1 = nn.Conv2d(33, 33, 3, padding=1, groups=33)
+        self.pointwise1 = nn.Conv2d(33, 64, 1)
+
+        self.conv3 = nn.Conv2d(64, 64, 3, padding=1)
 
         # depthwise separable layer 3
         self.depthwise2 = nn.Conv2d(64, 64, 3, padding=1, groups=64)
@@ -134,7 +136,6 @@ class SCNN3(nn.Module):
         print("Model contains {} trainable parameters".format(num_params))
 
 
-
     def forward(self, x):
         h1 = F.relu(self.conv1(x[:, :, :28, :]))
         h1 = F.max_pool2d(h1, kernel_size=3, stride=1, padding=1)
@@ -142,17 +143,18 @@ class SCNN3(nn.Module):
         h2 = F.relu(self.conv1(x[:, :, 14:, :]))
         h2 = F.max_pool2d(h2, kernel_size=3, stride=1, padding=1)
 
-        h1 = F.relu(self.pointwise1(self.depthwise1(torch.cat((h1, x), dim=1))))
+        h1 = F.relu(self.pointwise1(self.depthwise1(torch.cat((h1, x[:, :, :28, :]), dim=1))))
         h1 = F.max_pool2d(h1, kernel_size=2, stride=2)
-        #print(h1.shape)
 
-        h2 = F.relu(self.pointwise1(self.depthwise1(torch.cat((h2, x), dim=1))))
+        h2 = F.relu(self.pointwise1(self.depthwise1(torch.cat((h2, x[:, :, 14:, :]), dim=1))))
         h2 = F.max_pool2d(h2, kernel_size=2, stride=2)
-        #print(h2.shape)
+        
+        h1 = self.conv3(h1)
+        h2 = self.conv3(h2)
 
         h1 = F.relu(self.pointwise2(self.depthwise2(h1)))
-
         h2 = F.relu(self.pointwise2(self.depthwise2(h2)))
+
 
         h1_flat = self.flatten(h1)
         h2_flat = self.flatten(h2)
