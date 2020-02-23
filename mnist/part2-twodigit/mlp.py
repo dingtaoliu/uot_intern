@@ -18,21 +18,27 @@ class MLP(nn.Module):
     def __init__(self, input_dimension):
         super(MLP, self).__init__()
         self.flatten = Flatten()
-        # TODO initialize model layers here
+
+        # hidden layer with 64 units: 42 * 28 -> 64
         self.hidden = nn.Linear(input_dimension, 64)
+
+        # output layer with 20 logits
         self.output = nn.Linear(64, num_classes * 2)
 
     def forward(self, x):
+        # flatten input image
         xf = self.flatten(x)
 
+        # compute hidden states
         h = self.hidden(xf)
+
+        # compute logits
         logits = self.output(h)
 
+        # select first 10 logits for digit 1
         out_first_digit = F.softmax(logits[:, :num_classes], dim=1)
+        # select last 10 logits for digit 2
         out_second_digit = F.softmax(logits[:, num_classes:], dim=1)
-
-        assert out_first_digit.shape[1] == num_classes
-        assert out_second_digit.shape[1] == num_classes
 
         return out_first_digit, out_second_digit
 
@@ -58,7 +64,7 @@ def main():
 
     # Load model
     input_dimension = img_rows * img_cols
-    model = MLP(input_dimension) # TODO add proper layers to MLP class above
+    model = MLP(input_dimension)
 
     # Train
     train_model(train_batches, dev_batches, model)

@@ -113,17 +113,29 @@ def run_epoch(data, model, optimizer):
 
 def draw_plots(train_losses, val_losses, train_accs, val_accs):
     plt.plot(train_accs)
+    plt.xlabel("# Epochs")
+    plt.ylabel("Accuracy")
+    plt.title("Training Accuracy")
     plt.savefig("training_accuracy.png")
     plt.clf()
 
     plt.plot(val_accs)
+    plt.xlabel("# Epochs")
+    plt.ylabel("Accuracy")
+    plt.title("Validation Accuracy")
     plt.savefig("validation_accuracy.png")
     plt.clf()
 
     plt.plot(train_losses)
+    plt.xlabel("# Epochs")
+    plt.ylabel("Loss")
+    plt.title("Training Loss")
     plt.savefig("training_loss.png")
     plt.clf() 
 
     plt.plot(val_losses)
+    plt.xlabel("# Epochs")
+    plt.ylabel("Loss")
+    plt.title("Validation Loss")
     plt.savefig("validation_loss.png")
     plt.clf()
