@@ -87,6 +87,7 @@ def main():
 
     # Train
     train_model(train_batches, dev_batches, model, n_epochs=10, opt=torch.optim.Adam, lr=0.001)
+    #train_model(train_batches, dev_batches, model, n_epochs=10)
 
     ## Evaluate the model on test data
     loss, acc = run_epoch(test_batches, model.eval(), None)

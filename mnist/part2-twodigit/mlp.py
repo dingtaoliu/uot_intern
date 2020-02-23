@@ -19,15 +19,17 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
         self.flatten = Flatten()
         # TODO initialize model layers here
-        self.hidden = nn.Linear(input_dimension, num_classes * 2)
+        self.hidden = nn.Linear(input_dimension, 64)
+        self.output = nn.Linear(64, num_classes * 2)
 
     def forward(self, x):
         xf = self.flatten(x)
 
-        # TODO use model layers to predict the two digits
-        logits = self.hidden(xf)
-        out_first_digit = F.softmax(logits[:, :num_classes])
-        out_second_digit = F.softmax(logits[:, num_classes:])
+        h = self.hidden(xf)
+        logits = self.output(h)
+
+        out_first_digit = F.softmax(logits[:, :num_classes], dim=1)
+        out_second_digit = F.softmax(logits[:, num_classes:], dim=1)
 
         assert out_first_digit.shape[1] == num_classes
         assert out_second_digit.shape[1] == num_classes
